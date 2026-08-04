@@ -2,7 +2,7 @@ services:
   - type: web
     name: buji-hdb-backend
     env: node
-    buildCommand: cd backend && npm install && npm rebuild sqlite3 --build-from-source || true
+    buildCommand: cd backend && npm install
     startCommand: npm start
     envVars:
       - key: PORT
