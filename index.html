@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday DoraBuji! 🎉</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0800ff 0%,#01b3ff 20%, #d4ff00 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      padding: 16px;
+    }
+    .container { width: 100%; max-width: 1000px; position: relative; }
+
+    .nav-dots {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 1000;
+    }
+    .nav-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .nav-dot.active {
+      background: rgb(244, 244, 244);
+      transform: scale(1.3);
+      box-shadow: 0 0 20px rgba(255,255,255,0.5);
+    }
+    .nav-dot:hover { background: rgba(255, 255, 255, 0.8); transform: scale(1.2); }
+
+    .section {
+      display: none;
+      animation: fadeIn 0.5s ease;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 35px 30px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+      margin: 20px auto;
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .section.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes emojiWaving {
+      0% { transform: translateY(6px) scale(1); }
+      25% { transform: translateY(2px) scale(1.02) rotate(-3deg); }
+      50% { transform: translateY(0px) scale(1.06) rotate(3deg); }
+      75% { transform: translateY(2px) scale(1.02) rotate(-2deg); }
+      100% { transform: translateY(0px) scale(1.01) rotate(0deg); }
+    }
+
+    @keyframes emojiHug {
+      0% { transform: scale(0.98) rotate(-1deg); }
+      35% { transform: scale(1.04) rotate(1.5deg); }
+      60% { transform: scale(1.07) rotate(-1deg); }
+      100% { transform: scale(1.02) rotate(0deg); }
+    }
+
+    #finalEmoji {
+      font-size: 50vmin;
+      line-height: 1;
+      display: inline-block;
+      transform-origin: 50% 70%;
+      filter: drop-shadow(0 10px 25px rgba(0,0,0,0.15));
+      animation: emojiWaving 1.3s ease-in-out infinite, emojiHug 3.8s ease-in-out infinite;
+      will-change: transform;
+      user-select: none;
+    }
+
+    #finalHappyBirthday {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: titleReveal 900ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      text-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.15em;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Happy Birthday words animation */
+    .hb-word {
+      background-image: linear-gradient(90deg,
+        #ff006e 0%,
+        #fb5607 15%,
+        #ffbe0b 35%,
+        #3a86ff 55%,
+        #8338ec 75%,
+        #ff006e 100%
+      );
+      background-size: 220% 100%;
+      color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.12));
+
+      animation: hbRainbow 2.6s linear infinite, hbWordFloat 1.3s ease-in-out infinite;
+      will-change: transform, background-position;
+    }
+
+    .hb-gap {
+      display: inline-block;
+      width: 0.35em;
+      animation: hbGapPulse 0.9s ease-in-out infinite;
+    }
+
+    @keyframes hbRainbow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 220% 50%; }
+    }
+
+    @keyframes hbWordFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      30% { transform: translateY(-4px) rotate(-1deg); }
+      60% { transform: translateY(1px) rotate(1deg); }
+    }
+
+    @keyframes hbGapPulse {
+      0%, 100% { opacity: 0.85; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-1px); }
+    }
+
+    /* Stagger each word a bit */
+    #finalHappyBirthday .hb-word:nth-child(1) { animation-delay: 0ms; }
+    #finalHappyBirthday .hb-word:nth-child(3) { animation-delay: 120ms; }
+    #finalHappyBirthday .hb-word:nth-child(5) { animation-delay: 240ms; }
+    #finalHappyBirthday .hb-word:nth-child(7) { animation-delay: 360ms; }
+
+
+    @keyframes titleReveal {
+      0% { opacity: 0; transform: translateY(18px) scale(0.98); }
+      60% { opacity: 1; transform: translateY(-2px) scale(1.03); }
+      100% { opacity: 1; transform: translateY(0px) scale(1); }
+    }
+
+    .page-title {
+      font-size: 2.8rem;
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .message-box {
+      background: linear-gradient(135deg, #0099ff 0%, #2980b9 100%);
+      color: rgb(255, 255, 255);
+      padding: 28px;
+      border-radius: 18px;
+      margin: 25px 0;
+      font-size: 1.1rem;
+      line-height: 1.7;
+      box-shadow: 0 15px 30px rgba(52, 152, 219, 0.3);
+      position: relative;
+      overflow: hidden;
+      font-weight: 200;
+    }
+    .message-box::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: rotate(45deg);
+      animation: shimmer 4s infinite;
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .image-container {
+      text-align: center;
+      margin: 30px 0;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      background: transparent;
+      border: none;
+    }
+    .image-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 18px;
+      transition: transform 0.4s;
+      display: block;
+      width: 100%;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .image-container img:hover { transform: scale(1.01); }
+
+    .video-container {
+      text-align: center;
+      margin: 20px 0;
+      padding: 20px;
+      border-radius: 24px;
+      box-shadow: 0 25px 35px rgba(0, 0, 0, 0.1);
+      background: #000000;
+      border: 1px solid #0c5ac1;
+    }
+    .video-container video {
+      width: 100%;
+      height: 550px;
+      max-width: 520px;
+      margin: 0 auto;
+      border-radius: 20px;
+      display: block;
+      object-fit: cover;
+      background: #000;
+    }
+
+    .tamil-poem {
+      background: linear-gradient(135deg, #007dfa, #e2e8f0, #ea18f9 );
+      color: #2c3e50;
+      padding: 30px 20px;
+      border-radius: 18px;
+      margin: 30px 0;
+      font-size: 1.3rem;
+      line-height: 2;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+      font-family: 'Noto Sans Tamil', 'Inter', sans-serif;
+      font-weight: 500;
+      word-break: break-word;
+      border: 1px solid #cbd5e0;
+    }
+
+    .btn-container { display: flex; justify-content: center; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
+    .btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      letter-spacing: 0.3px;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: #3498db; color: white; }
+    .btn-primary:hover { background: #2980b9; }
+    .btn-back { background: #95a5a6; color: white; }
+    .btn-back:hover { background: #7f8c8d; }
+    .btn-next { background: #2c3e50; color: white; }
+    .btn-next:hover { background: #34495e; }
+    .btn-exit { background: #e74c3c; color: white; }
+    .btn-exit:hover { background: #c0392b; }
+
+    .login-container { max-width: 400px; margin: 0 auto; text-align: center; }
+    .password-input {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 1.1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      margin: 20px 0;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s;
+    }
+    .password-input:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+    }
+    .login-hint { color: #7f8c8d; font-size: 0.9rem; margin-top: 10px; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 24px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+      border: 1px solid #e2e8f0;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #2c3e50;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      z-index: 3000;
+      opacity: 0;
+      transition: 0.3s;
+      pointer-events: none;
+      border: none;
+      font-size: 0.95rem;
+    }
+    .notification.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 768px) {
+      .page-title { font-size: 2rem; }
+      .nav-dots { right: 8px; }
+      .btn { padding: 10px 20px; font-size: 0.9rem; }
+    }
+    @media (max-width: 480px) {
+      .page-title { font-size: 1.7rem; }
+      .container { padding: 0; }
+      .section { padding: 20px 15px; }
+      .btn { padding: 8px 16px; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="notification" class="notification">🎂 <span id="notifMsg"></span></div>
+
+  <!-- ADMIN LOGIN MODAL -->
+  <div id="adminLoginModal" class="modal">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+      <h2><i class="fas fa-lock"></i> Admin Access</h2>
+      <p style="margin-bottom: 20px; color: #7f8c8d;">Please enter the admin password</p>
+      <input type="password" id="adminPasswordInput" class="password-input" placeholder="Enter password...">
+      <div id="adminLoginError" style="color: #e74c3c; display: none; margin-bottom: 15px;">Incorrect password</div>
+      <div class="btn-container" style="margin-top: 10px;">
+        <button class="btn btn-back" onclick="closeModal('adminLoginModal')"><i class="fas fa-times"></i> Cancel</button>
+        <button class="btn btn-primary" onclick="verifyAdminPassword()"><i class="fas fa-sign-in-alt"></i> Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL MODAL -->
+  <div id="adminPanelModal" class="modal">
+    <div class="modal-content" style="max-width: 900px; width: 95%;">
+      <h2><i class="fas fa-user-shield"></i> Admin Panel - User Responses</h2>
+      <div style="margin-bottom: 20px; color:#7f8c8d; font-size:0.95rem;">
+        Shared responses are stored in the backend database and visible to all users.
+      </div>
+
+
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+          <thead>
+            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+              <th style="padding: 12px; font-weight: 600;">Time</th>
+              <th style="padding: 12px; font-weight: 600;">Responses</th>
+            </tr>
+          </thead>
+          <tbody id="adminResponsesTableBody">
+            <tr><td colspan="2" style="padding: 12px; text-align: center;">No data</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="btn-container" style="margin-top: 25px;">
+        <button class="btn btn-back" onclick="closeModal('adminPanelModal')"><i class="fas fa-times"></i> Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <div class="container">
+    <div class="nav-dots">
+      <div class="nav-dot active" data-section="1" onclick="goToSection(1)"></div>
+      <div class="nav-dot" data-section="2" onclick="goToSection(2)"></div>
+      <div class="nav-dot" data-section="3" onclick="goToSection(3)"></div>
+      <div class="nav-dot" data-section="4" onclick="goToSection(4)"></div>
+      <div class="nav-dot" data-section="5" onclick="goToSection(5)"></div>
+    </div>
+
+    <div id="section1" class="section active">
+      <h1 class="page-title">🎉 Happy Birthday DoraBuji! <span class="wishing-emoji" aria-hidden="true">🎉</span></h1>
+      <center>
+        <div class="message-box"><i class="fas fa-heart" style="margin-right:10px; color:#e74c3c;"></i> To the most wonderful person in the world. May your day be filled with joy and laughter. 🎂</div>
+      </center>
+      <div class="image-container">
+        <img src="https://i.pinimg.com/1200x/63/1a/2d/631a2dfd05082cb0183a3aeed6d38377.jpg" alt="Birthday celebration">
+      </div>
+      <div class="btn-container">
+        <button class="btn btn-next" onclick="goToSection(2)"><i class="fas fa-arrow-right"></i> Next</button>
+      </div>
+    </div>
+
+    <div id="section2" class="section">
+      <h2 class="page-title">✨ Special World Beautiful Girl  ✨</h2>
+      <div class="image-container">
+        <img src="trt.jpeg" alt="Happy dog - special moment">
+      </div>
+      <div class="message-box" style="background:linear-gradient(135deg,#2c3e50,#3498db);">
+        <center><i class="fas fa-camera-retro"></i> Remember that day? You smiled and the whole world lit up.</center>
+      </div>
+      <div class="btn-container">
+        <button class="btn btn-back" onclick="goToSection(1)"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-next" onclick="goToSection(3)"><i class="fas fa-arrow-right"></i> Next</button>
+      </div>
+    </div>
+
+    <div id="section3" class="section">
+      <h2 class="page-title">🎥 Birthday Video 🎥</h2>
+      <div class="video-container">
+        <video controls preload="metadata" playsinline>
+          <source src="app.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+          <a href="app.mp4" style="color:#fff;">Download the video instead.</a>
+        </video>
+      </div>
+      <div class="btn-container">
+        <button class="btn btn-back" onclick="goToSection(2)"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-next" onclick="goToSection(4)"><i class="fas fa-arrow-right"></i> Next</button>
+      </div>
+    </div>
+
+    <div id="section4" class="section">
+      <h2 class="page-title">என் இனிய நினைவுகள் உனக்காக!</h2>
+      <div class="tamil-poem">
+        <p>
+          பிறந்த நாள் வாழ்த்துக்கள் என் உயிர் தோழி ! <br><br>
+          வாழ்க்கை பாதையில் நான் தனியாக நடந்த போது, நிழல் போல வந்து என் <br> அருகில் நடந்தவள் நீ <br><br>
+          சிறு சிரிப்பில் கூட என் கவலைகளை மறக்கச் செய்தாய், ஒரு வார்த்தையால்<br> கூட என் மனதை அமைதியாக்கினாய் <br><br>
+          நான் விழும் நேரத்தில் என்னை தூக்கி நிறுத்தினாய், நான் அழும் நேரத்தில்<br> என் கண்ணீரை துடைத்தாய் <br><br>
+          உலகம் என்னை புரியாத போது என்னை புரிந்த ஒரே மனம் நீ, என் <br> அமைதியிலும் கூட என் கதையை கேட்கும் தோழி நீ <br><br>
+          நட்பு என்ற வார்த்தைக்கு அர்த்தம் கொடுத்தவள் நீ, என் வாழ்க்கை புத்தகத்தில் <br> மாறாத பக்கமாக இருக்கும் நீ. <br><br>
+          நாட்கள் மாறலாம், காலம் ஓடலாம், ஆனால் மாறாத ஒன்று — என் உயிர் தோழி <br> நீ. <br><br>
+        </p>
+      </div>
+      <div class="btn-container">
+        <button class="btn btn-back" onclick="goToSection(3)"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-next" onclick="goToSection(5)"><i class="fas fa-arrow-right"></i> Next</button>
+      </div>
+    </div>
+
+    <!-- SECTION 5: BIRTHDAY QUIZ & LIVE CHAT -->
+    <div id="section5" class="section" style="position: relative;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; flex-wrap:wrap; gap:10px;">
+        <button class="btn btn-primary" onclick="openAdminLoginModal()" style="padding: 8px 15px; font-size: 0.85rem;"><i class="fas fa-lock"></i> Admin</button>
+        <div style="display:flex; background:rgba(0,0,0,0.06); padding:4px; border-radius:12px; gap:6px;">
+          <button id="tabBtnQuiz" class="btn" onclick="switchSec5Tab('quiz')" style="padding: 6px 14px; font-size: 0.85rem; background:#3498db; color:white; border-radius:8px;"><i class="fas fa-question-circle"></i> Quiz</button>
+          <button id="tabBtnChat" class="btn" onclick="switchSec5Tab('chat')" style="padding: 6px 14px; font-size: 0.85rem; background:transparent; color:#2c3e50; border-radius:8px;"><i class="fas fa-comments"></i> Live Chat</button>
+        </div>
+      </div>
+
+      <!-- Quiz UI -->
+      <div id="quizAdminView" style="display:block;">
+
+        <h2 class="page-title" style="margin-top: 10px;">🎂 Who Is Your Favorite?🎂</h2>
+
+        <div class="message-box" id="quizTopNote" style="margin-top:0;background:linear-gradient(135deg,#2c3e50,#3498db);">
+          <center> 🎂 Answer the questions to unlock your birthday message. 🎂 </center>
+        </div>
+
+
+
+        <div id="quizStartArea" class="btn-container" style="margin-top:10px;">
+          <center>
+            <button class="btn btn-next" onclick="quizStart()"><i class="fas fa-play"></i> Start Quiz</button>
+          </center>
+        </div>
+
+        <div id="quizQuestionArea" style="display:none;" aria-hidden="true">
+
+          <div class="message-box" style="background:linear-gradient(135deg,#2c3e50,#3498db);">
+            <div style="font-size:1rem; opacity:0.95; margin-bottom:8px;">
+              Question <span id="quizQuestionIndex">1</span> / <span id="quizTotalQuestions">0</span>
+            </div>
+            <div style="font-size:1.3rem; font-weight:700; color:white;" id="quizQuestionText"></div>
+          </div>
+
+         
+
+          <div class="btn-container" style="margin-top:22px;">
+            <button class="btn btn-next" id="quizSubmitBtn" onclick="quizSubmit()" style="min-width:210px; display:none;">
+              <i class="fas fa-paper-plane"></i> Submit Answer
+            </button>
+            <button class="btn btn-next" id="quizNextBtn" onclick="quizNext()" style="min-width:210px; display:none; background:#2c3e50;">
+              <i class="fas fa-forward"></i> Next Question
+            </button>
+          </div>
+        </div>
+<br>
+       <div id="quizFinalArea" style="display:none;">
+          <div id="finalEmojiWrap" style="display:flex; align-items:center; justify-content:center; width:100%; margin: 20px 0 10px 0;">
+            <div id="finalEmoji" aria-label="Congratulations" role="img">🤗</div> <br> <br>
+          </div> <br> <br>
+
+          <div id="finalCongratsText" style="display:flex; justify-content:center; text-align:center; margin-top: 24px;">
+
+
+<br>
+
+
+            <h1 class="page-title" id="finalHappyBirthday" style="margin: 0; padding: 0; font-size: 2.1rem; font-weight: 950; letter-spacing:-0.3px; transform: translateY(0px);">
+            <br> <br>
+            <span class="hb-word" style="display:inline-block;">Happy Birthday Dora Buji! </span>
+             
+            </h1>
+          </div>
+
+          <div class="btn-container" style="margin-top:18px;">
+            <button class="btn btn-exit" onclick="quizExit()" style="min-width:260px;">
+              <i class="fas fa-sign-out-alt"></i> Exit Forever Bujii
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE CHAT UI -->
+      <div id="chatViewArea" style="display:none;">
+        <h2 class="page-title" style="margin-top: 10px;">💬 Private 2-Member Chat</h2>
+        
+        <!-- LOGIN CARD -->
+        <div id="chatLoginArea" class="login-container" style="margin-top:15px;">
+          <div class="message-box" style="margin-top:0; background:linear-gradient(135deg,#2c3e50,#3498db); text-align:center;">
+            <i class="fas fa-comments" style="font-size:2rem; margin-bottom:10px;"></i>
+            <p>Connect with your partner in real-time. Enter your name and private room password to start chatting!</p>
+          </div>
+          <input type="text" id="chatUsernameInput" class="password-input" placeholder="Your Name (e.g. Nike / Buji)" value="">
+          <input type="password" id="chatPasswordInput" class="password-input" placeholder="Room Password (e.g. buji2005)" value="buji2005">
+          <button class="btn btn-primary" onclick="joinChatRoom()" style="width:100%; justify-content:center; padding:14px; font-size:1.1rem;">
+            <i class="fas fa-sign-in-alt"></i> Join Chat Room
+          </button>
+        </div>
+
+        <!-- ACTIVE CHAT AREA -->
+        <div id="chatActiveArea" style="display:none;">
+          <!-- Header Bar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:12px 18px; border-radius:16px; border:1px solid #e2e8f0; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span id="chatOnlineBadge" style="background:#2ecc71; color:white; font-size:0.75rem; padding:4px 10px; border-radius:20px; font-weight:700;">🟢 1/2 Online</span>
+              <span style="font-weight:600; color:#2c3e50; font-size:0.95rem;" id="chatUserDisplay">User: Nike</span>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-exit" style="padding:6px 12px; font-size:0.8rem;" onclick="clearAllChatMessages()"><i class="fas fa-trash-alt"></i> Clear All</button>
+              <button class="btn btn-back" style="padding:6px 12px; font-size:0.8rem;" onclick="leaveChatRoom()"><i class="fas fa-door-open"></i> Leave</button>
+            </div>
+          </div>
+
+          <!-- Message Feed -->
+          <div id="chatMessagesFeed" style="height:380px; overflow-y:auto; padding:15px; background:rgba(241,245,249,0.6); border-radius:18px; border:1px solid #e2e8f0; margin-bottom:10px; display:flex; flex-direction:column; gap:12px;">
+            <div style="text-align:center; color:#7f8c8d; font-size:0.9rem; margin:auto;">Welcome to private chat! Say hello 👋</div>
+          </div>
+
+          <!-- Typing Indicator -->
+          <div id="chatTypingIndicator" style="font-size:0.85rem; color:#7f8c8d; height:22px; font-style:italic; padding-left:5px;"></div>
+
+          <!-- Chat Input Controls -->
+          <div style="display:flex; gap:8px; align-items:center; margin-top:5px;">
+            <button class="btn btn-back" style="padding:12px 14px; border-radius:12px;" onclick="$id('chatPhotoInput').click()" title="Send Photo">
+              <i class="fas fa-camera"></i>
+            </button>
+            <input type="file" id="chatPhotoInput" accept="image/*" style="display:none;" onchange="handleChatPhotoUpload(event)">
+            
+            <button id="chatVoiceRecordBtn" class="btn btn-back" style="padding:12px 14px; border-radius:12px;" onclick="toggleVoiceRecording()" title="Record Voice Message">
+              <i class="fas fa-microphone"></i>
+            </button>
+
+            <input type="text" id="chatMessageInput" class="password-input" style="margin:0; flex:1;" placeholder="Type your message..." onkeypress="handleChatInputKeypress(event)">
+
+            <button class="btn btn-primary" style="padding:12px 18px; border-radius:12px;" onclick="sendChatMessage()">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== API Base URL resolver =====
+    // Priority: ?server= URL param -> localStorage override -> same origin
+    function resolveApiBase() {
+      const params = new URLSearchParams(window.location.search);
+      const serverParam = params.get('server');
+      if (serverParam) {
+        try { localStorage.setItem('buji_api_base', serverParam.replace(/\/+$/, '')); } catch (e) {}
+        return serverParam.replace(/\/+$/, '');
+      }
+      try {
+        const saved = localStorage.getItem('buji_api_base');
+        if (saved) return saved.replace(/\/+$/, '');
+      } catch (e) {}
+      return window.location.origin; // serve from same origin (Node backend)
+    }
+    const API_BASE = resolveApiBase();
+
+    function apiUrl(path) {
+      return API_BASE + path;
+    }
+
+    // ===== Supabase client (for admin JWT auth) =====
+    const SUPABASE_URL = 'https://rryixlgtukxznlojrjee.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_woY8t2ql3Q_r7nTBcV46Fw_6hdjmx_k';
+    let supabaseClient = null;
+    try {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+          auth: { persistSession: true, autoRefreshToken: true }
+        });
+      }
+    } catch (e) {
+      console.error('Supabase init failed:', e);
+    }
+
+    // Get a valid Supabase access token for admin API calls.
+    // Uses existing session, or signs in anonymously to mint a fresh JWT.
+    async function getSupabaseAccessToken() {
+      if (!supabaseClient) return null;
+      try {
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        if (sessionData?.session?.access_token) {
+          return sessionData.session.access_token;
+        }
+        // No active session -> anonymous sign-in (returns a valid JWT)
+        const { data: anonData, error: anonError } = await supabaseClient.auth.signInAnonymously();
+        if (anonError) {
+          console.error('Supabase anonymous sign-in failed:', anonError.message);
+          return null;
+        }
+        return anonData.session?.access_token || null;
+      } catch (e) {
+        console.error('getSupabaseAccessToken error:', e);
+        return null;
+      }
+    }
+
+    function $id(id){ return document.getElementById(id); }
+
+    const notifDiv = $id('notification');
+    const notifMsg = $id('notifMsg');
+
+    function showNotification(title, msg){
+      if(!notifDiv || !notifMsg) return;
+      notifMsg.innerText = msg || title;
+      notifDiv.classList.add('show');
+      setTimeout(() => notifDiv.classList.remove('show'), 3000);
+    }
+
+    window.goToSection = function(section){
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      $id('section' + section).classList.add('active');
+      document.querySelectorAll('.nav-dot').forEach((dot, idx) => {
+        if (idx+1 === section) dot.classList.add('active');
+        else dot.classList.remove('active');
+      });
+    };
+
+    window.openAdminLoginModal = function(){
+      $id('adminPasswordInput').value = '';
+      $id('adminLoginError').style.display = 'none';
+      $id('adminLoginModal').classList.add('active');
+    };
+
+    window.closeModal = function(id){
+      if(!id) return;
+      $id(id).classList.remove('active');
+    };
+
+    // ===== Admin gating =====
+    let isAdmin = false;
+
+    window.verifyAdminPassword = async function(){
+      const pwd = $id('adminPasswordInput').value;
+      if(pwd === 'buji2005'){
+        isAdmin = true;
+        closeModal('adminLoginModal');
+        $id('adminPanelModal').classList.add('active');
+        // Get a Supabase token (session or anonymous) and fetch responses
+        const token = await getSupabaseAccessToken();
+        fetchAdminResponses(token);
+
+
+        // If quiz already visible to user, ensure admin-only correct UI stays hidden here.
+        const correctTextEl = $id('quizCorrectText');
+        if(correctTextEl){ correctTextEl.style.display = 'none'; }
+      } else {
+        $id('adminLoginError').style.display = 'block';
+        isAdmin = false;
+      }
+    };
+
+    // ===== Quiz data (admin-only in UI; still in client memory but not rendered for regular users) =====
+    const quizQuestionsFull = [
+      { id:'q1', question:'What was your first impression of me? 😊', options:['Friendly','Shy','Funny','Serious'], correctIndex:0, correctText:'Funny' },
+      { id:'q2', question:'What do you like most about me as a friend? 🤗', options:['Kindness','Honesty','Sense of Humor','Supportiveness'], correctIndex:2, correctText:'Kindness' },
+      { id:'q3', question:'When did you realize we would become best friends? 🌟', options:['First Meeting','School/College Days','During a Special Event','After Spending More Time Together'], correctIndex:3, correctText:'After Spending More Time Together' },
+      { id:'q4', question:'What is your favorite memory of us together? 🎉', options:['Trip/Vacation','Birthday Celebration','School/College Fun','Hanging Out Together'], correctIndex:1, correctText:'School/College Fun' },
+      { id:'q5', question:'What nickname do you like calling me? 😄', options:['Buddy','Bestie','Partner-in-Crime','Champ'], correctIndex:1, correctText:'Bestie' },
+      { id:'q6', question:'If we could travel anywhere together, where would we go? ✈️', options:['Goa','Ooty','Maldives','Switzerland'], correctIndex:2, correctText:'Maldives' },
+      { id:'q7', question:'What makes our friendship special to you? 💙', options:['Trust','Loyalty','Understanding','All of the Above'], correctIndex:1, correctText:'Loyalty' },
+      { id:'q8', question:'What is one thing you want us to do together in the future? 🌈', options:['Travel the World','Start a Business','Attend a Concert','Create More Memories'], correctIndex:2, correctText:'Attend a Concert' },
+      { id:'q9', question:'How have I made your life better as a friend? 😊', options:['By Supporting Me','By Making Me Laugh','By Being There for Me','All of the Above'], correctIndex:2, correctText:'By Being There for Me' },
+      { id:'q10', question:'Why do you consider me your best friend? 💖', options:['You Understand Me','You Support Me','You Make Me Happy','All of the Above'], correctIndex:2, correctText:'You Make Me Happy' }
+    ];
+
+
+    let quizState = { started:false, finished:false, index:0, correctCount:0, answered:false, selectedIndex: undefined, answers: [] };
+
+    function quizReset(){
+      quizState = { started:false, finished:false, index:0, correctCount:0, answered:false, selectedIndex: undefined, answers: [] };
+      quizRender();
+    }
+
+
+    window.quizStart = function(){
+      // Regular users can start quiz. Correct answers are never shown in the quiz UI.
+      if(!quizState.started){
+        quizState.started = true;
+        quizState.finished = false;
+        quizState.index = 0;
+        quizState.correctCount = 0;
+        quizState.answered = false;
+        quizState.selectedIndex = undefined;
+        quizState.answers = [];
+      }
+      quizRender();
+    };
+
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','<')
+        .replaceAll('>','>')
+        .replaceAll('"','"')
+        .replaceAll("'",'&#039;');
+    }
+
+    window.quizRender = function(){
+      const totalEl = $id('quizTotalQuestions');
+      const idxEl = $id('quizQuestionIndex');
+      const qTextEl = $id('quizQuestionText');
+
+      const startArea = $id('quizStartArea');
+      const qArea = $id('quizQuestionArea');
+      const finalArea = $id('quizFinalArea');
+
+      const optionsArea = $id('quizOptionsArea');
+      const feedback = $id('quizFeedback');
+      const submitBtn = $id('quizSubmitBtn');
+      const nextBtn = $id('quizNextBtn');
+
+      feedback.style.display = 'none';
+      submitBtn.style.display = 'none';
+      nextBtn.style.display = 'none';
+
+      // Start/Question areas should be visible for everyone.
+      // Admin-only parts: no correct answer reveal in UI.
+      if(!quizState.started || quizState.finished){
+        startArea.style.display = quizState.finished ? 'none' : 'block';
+        qArea.style.display = 'none';
+        finalArea.style.display = quizState.finished ? 'block' : 'none';
+        return;
+      }
+
+      startArea.style.display = 'none';
+      qArea.style.display = 'block';
+      finalArea.style.display = 'none';
+
+
+      const q = quizQuestionsFull[quizState.index];
+      totalEl.textContent = quizQuestionsFull.length;
+      idxEl.textContent = quizState.index + 1;
+      qTextEl.textContent = q.question;
+
+      optionsArea.innerHTML = '';
+      quizState.answered = false;
+      quizState.selectedIndex = undefined;
+
+      optionsArea.style.display = 'flex';
+
+
+
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-next';
+        btn.style.minWidth = '220px';
+        btn.style.justifyContent = 'flex-start';
+        btn.style.background = '#2c3e50';
+        btn.innerHTML = `<i class="fas fa-circle"></i> ${opt}`;
+        btn.onclick = () => {
+          // Regular behavior for Admin: clicking just selects and advances WITHOUT wrong answer message.
+          quizRenderMcqSelection(i);
+        };
+        btn.id = `quizOpt_${q.id}_${i}`;
+        optionsArea.appendChild(btn);
+      });
+    };
+
+    function quizRenderMcqSelection(selectedIndex){
+      const q = quizQuestionsFull[quizState.index];
+      if(!q) return;
+
+      for(let i=0;i<q.options.length;i++){
+        const btn = $id(`quizOpt_${q.id}_${i}`);
+        if(!btn) continue;
+        // Clear styling to avoid “separated/odd” visuals from previous renders.
+        btn.style.outline = 'none';
+        btn.style.background = '#2c3e50';
+        btn.style.transform = 'none';
+
+        if(i === selectedIndex){
+          btn.style.outline = '3px solid rgba(52,152,219,0.35)';
+          btn.style.background = '#3498db';
+        }
+      }
+
+      quizState.selectedIndex = selectedIndex;
+      quizState.answered = false;
+
+      // Auto submit after small delay; no wrong/correct display for users.
+
+
+
+      setTimeout(() => quizSubmit(), 150);
+    }
+
+    function quizGetUserAnswer(){
+      const q = quizQuestionsFull[quizState.index];
+      return { mcqIndex: quizState.selectedIndex };
+    }
+
+    window.quizSubmit = function(){
+      if(quizState.answered) return;
+      const q = quizQuestionsFull[quizState.index];
+      if(!q) return;
+
+      const ans = quizGetUserAnswer();
+      const sel = typeof ans.mcqIndex === 'number' ? ans.mcqIndex : -1;
+      if(sel === -1){
+        // No notification spam after changes.
+        return;
+      }
+
+      const isCorrect = sel === q.correctIndex;
+
+      quizState.answered = true;
+      quizState.selectedIndex = sel;
+      if(isCorrect) quizState.correctCount += 1;
+
+      quizState.answers = quizState.answers || [];
+      quizState.answers[quizState.index] = {
+        questionId: q.id,
+        question: q.question,
+        yourSelectedIndex: sel,
+        correctIndex: q.correctIndex,
+        isCorrect: !!isCorrect,
+        yourAnswerText: q.options[sel]
+      };
+
+      // IMPORTANT: No “Wrong Answer” message, and no indication selected option is wrong.
+
+      // Do not show any quiz feedback banners (prevents the "Answer recorded" text).
+      const feedback = $id('quizFeedback');
+      if(feedback){ feedback.style.display = 'none'; }
+
+      // Correct answers must NOT be shown to users.
+      const correctTextEl = $id('quizCorrectText');
+      if(correctTextEl){
+        correctTextEl.style.display = 'none';
+        correctTextEl.textContent = '';
+      }
+
+      $id('quizSubmitBtn').style.display = 'none';
+      $id('quizNextBtn').style.display = 'inline-flex';
+    };
+
+    window.quizNext = async function(){
+      if(!quizState.answered) return;
+      quizState.index += 1;
+      quizState.selectedIndex = undefined;
+      quizState.answered = false;
+
+      if(quizState.index >= quizQuestionsFull.length){
+        quizState.finished = true;
+        quizState.started = true;
+      quizRender();
+
+
+        // Store admin-visible results in backend/database
+
+        const finalScorePercent = Math.round((quizState.correctCount / quizQuestionsFull.length) * 100);
+        const responses = (quizState.answers || []).map((a, idx) => {
+          const q = quizQuestionsFull[idx];
+          return {
+            questionId: q.id,
+            question: q.question,
+            yourAnswer: q.options[a.yourSelectedIndex],
+            correctAnswer: q.correctText,
+            isCorrect: !!a.isCorrect,
+            yourSelectedIndex: a.yourSelectedIndex
+          };
+        });
+
+        const payload = {
+          emailTo: 'Anonymous',
+          results: responses,
+          finalScorePercent
+        };
+
+        try {
+          const resp = await fetch(apiUrl('/api/quiz/submit'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const data = await resp.json();
+          if (!data.success) {
+            showNotification('Error', data.error || 'Failed to save quiz response');
+          }
+        } catch (e) {
+          console.error('Quiz submit failed:', e);
+          showNotification('Error', 'Network error saving quiz response');
+        }
+
+        return;
+
+      }
+
+      quizRender();
+
+    };
+
+    window.quizExit = function(){
+      quizReset();
+      // Immediately close website/application when possible.
+      // If not allowed (browser security), navigate away.
+      try {
+        window.close();
+      } catch {}
+      // Fallback
+      setTimeout(() => {
+        try { window.location.href = 'about:blank'; } catch {}
+      }, 50);
+    };
+
+function fetchAdminResponses(token){
+      const tbody = $id('adminResponsesTableBody');
+      if(!tbody) return;
+tbody.innerHTML = '<tr><td colspan="2" style="padding: 12px; text-align: center;">Loading shared responses...</td></tr>';
+
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+
+      fetch(apiUrl('/api/admin/responses'), { headers })
+        .then(r => {
+          if(!r.ok){
+            throw new Error('Backend responded with HTTP ' + r.status);
+          }
+          return r.json();
+        })
+        .then(payload => {
+          if(!payload.success){
+            throw new Error(payload.error || 'Failed to load responses');
+          }
+          const data = payload.responses || [];
+if(!data.length){
+            tbody.innerHTML = '<tr><td colspan="2" style="padding: 12px; text-align: center; color:#7f8c8d;">No responses yet.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = '';
+          data
+            .slice()
+            .reverse()
+            .forEach(row => {
+              let parsed = [];
+              try { parsed = JSON.parse(row.responses_json) || []; } catch {}
+
+              const detailsHtml = '<ul style="margin:0; padding-left:15px; font-size:0.85rem;">' +
+                parsed.map((item) => `
+<li>${escapeHtml(item.question)}: ${escapeHtml(item.yourAnswer)}</li>
+                `).join('') +
+                '</ul>';
+
+              const tr = document.createElement('tr');
+              tr.style.borderBottom = '1px solid #e2e8f0';
+              tr.innerHTML = `
+                <td style="padding: 12px;">${new Date(row.created_at).toLocaleString()}</td>
+                <td style="padding: 12px;">${detailsHtml}</td>
+              `;
+              tbody.appendChild(tr);
+            });
+        })
+        .catch(err => {
+          console.error('Admin responses load failed:', err);
+tbody.innerHTML = '<tr><td colspan="2" style="padding: 12px; text-align: center; color:#e74c3c;">Failed to load responses. Start the backend (cd backend && npm start) and open http://localhost:3001, or add ?server=YOUR_BACKEND_URL to the address.</td></tr>';
+        });
+    }
+
+
+
+    // ===== LIVE CHAT MODULE LOGIC =====
+    let chatSocket = null;
+    let currentChatRoom = null;
+    let currentChatUser = null;
+    let chatTypingTimeout = null;
+    let mediaRecorder = null;
+    let audioChunks = [];
+
+    window.switchSec5Tab = function(tab) {
+      const quizView = $id('quizAdminView');
+      const chatView = $id('chatViewArea');
+      const btnQuiz = $id('tabBtnQuiz');
+      const btnChat = $id('tabBtnChat');
+
+      if (tab === 'chat') {
+        quizView.style.display = 'none';
+        chatView.style.display = 'block';
+        btnQuiz.style.background = 'transparent';
+        btnQuiz.style.color = '#2c3e50';
+        btnChat.style.background = '#3498db';
+        btnChat.style.color = 'white';
+        initChatSocket();
+      } else {
+        quizView.style.display = 'block';
+        chatView.style.display = 'none';
+        btnQuiz.style.background = '#3498db';
+        btnQuiz.style.color = 'white';
+        btnChat.style.background = 'transparent';
+        btnChat.style.color = '#2c3e50';
+      }
+    };
+
+    function initChatSocket() {
+      if (chatSocket) return;
+      const serverUrl = resolveApiBase();
+      chatSocket = io(serverUrl, { transports: ['websocket', 'polling'] });
+
+      chatSocket.on('joined_success', data => {
+        currentChatRoom = data.room;
+        $id('chatLoginArea').style.display = 'none';
+        $id('chatActiveArea').style.display = 'block';
+        updateChatOnlineBadge(data.onlineUsers);
+      });
+
+      chatSocket.on('peer_joined', data => {
+        updateChatOnlineBadge(data.onlineUsers);
+        if (data.messages && Array.isArray(data.messages)) {
+          renderChatMessagesFeed(data.messages);
+        }
+        showNotification('Live Chat', `${data.user} connected!`);
+      });
+
+      chatSocket.on('new_message', data => {
+        appendSingleChatMessage(data.message);
+      });
+
+      chatSocket.on('typing', data => {
+        const ind = $id('chatTypingIndicator');
+        if (ind) {
+          ind.textContent = `${data.user} is typing...`;
+          clearTimeout(chatTypingTimeout);
+          chatTypingTimeout = setTimeout(() => { ind.textContent = ''; }, 2000);
+        }
+      });
+
+      chatSocket.on('peer_left', data => {
+        showNotification('Live Chat', `${data.user} disconnected.`);
+        updateChatOnlineBadge(1);
+      });
+
+      chatSocket.on('message_deleted', data => {
+        const msgEl = document.querySelector(`[data-msg-id="${data.messageId}"]`);
+        if (msgEl) msgEl.remove();
+      });
+
+      chatSocket.on('all_messages_deleted', () => {
+        $id('chatMessagesFeed').innerHTML = '<div style="text-align:center; color:#7f8c8d; margin-top:20px;">All messages cleared.</div>';
+      });
+
+      chatSocket.on('join_error', data => {
+        showNotification('Join Error', data.error || 'Room is full (max 2 members)');
+      });
+    }
+
+    window.joinChatRoom = function() {
+      const username = $id('chatUsernameInput').value.trim();
+      const password = $id('chatPasswordInput').value.trim();
+      if (!username || !password) {
+        showNotification('Input Required', 'Please enter your name and room password');
+        return;
+      }
+      currentChatUser = username;
+      $id('chatUserDisplay').textContent = `User: ${username}`;
+      initChatSocket();
+      chatSocket.emit('auth_join', { password, user: username });
+    };
+
+    window.leaveChatRoom = function() {
+      if (chatSocket) {
+        chatSocket.disconnect();
+        chatSocket = null;
+      }
+      $id('chatLoginArea').style.display = 'block';
+      $id('chatActiveArea').style.display = 'none';
+      currentChatRoom = null;
+    };
+
+    window.sendChatMessage = function(type = 'text', customUrl = '') {
+      if (!chatSocket || !currentChatUser || !currentChatRoom) return;
+      const inputEl = $id('chatMessageInput');
+      const text = type === 'text' ? inputEl.value.trim() : '';
+
+      if (type === 'text' && !text) return;
+
+      const msgObj = {
+        id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+        room: currentChatRoom,
+        user: currentChatUser,
+        message: text,
+        type: type,
+        url: customUrl,
+        timestamp: new Date().toISOString()
+      };
+
+      chatSocket.emit('send_message', { message: msgObj });
+      if (type === 'text') inputEl.value = '';
+    };
+
+    window.handleChatInputKeypress = function(e) {
+      if (chatSocket) {
+        chatSocket.emit('typing', {});
+      }
+      if (e.key === 'Enter') {
+        sendChatMessage();
+      }
+    };
+
+    window.handleChatPhotoUpload = function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        sendChatMessage('image', e.target.result);
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.toggleVoiceRecording = async function() {
+      const btn = $id('chatVoiceRecordBtn');
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.innerHTML = '<i class="fas fa-microphone"></i>';
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+        mediaRecorder.onstop = async () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const formData = new FormData();
+          formData.append('audio', audioBlob, 'voice.webm');
+          try {
+            const res = await fetch(apiUrl('/api/upload'), { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.success) {
+              sendChatMessage('voice', data.url);
+            }
+          } catch (err) {
+            showNotification('Error', 'Voice upload failed');
+          }
+          stream.getTracks().forEach(track => track.stop());
+        };
+        mediaRecorder.start();
+        btn.style.background = '#e74c3c';
+        btn.style.color = 'white';
+        btn.innerHTML = '<i class="fas fa-stop"></i>';
+      } catch (err) {
+        showNotification('Microphone Error', 'Could not access microphone');
+      }
+    };
+
+    function updateChatOnlineBadge(count) {
+      const badge = $id('chatOnlineBadge');
+      if (badge) {
+        badge.textContent = `🟢 ${count}/2 Online`;
+      }
+    }
+
+    function renderChatMessagesFeed(messages) {
+      const feed = $id('chatMessagesFeed');
+      if (!feed) return;
+      feed.innerHTML = '';
+      if (!messages || messages.length === 0) {
+        feed.innerHTML = '<div style="text-align:center; color:#7f8c8d; font-size:0.9rem; margin:auto;">No messages yet. Say hello 👋</div>';
+        return;
+      }
+      messages.forEach(msg => appendSingleChatMessage(msg));
+    }
+
+    function appendSingleChatMessage(msg) {
+      const feed = $id('chatMessagesFeed');
+      if (!feed) return;
+
+      const welcomeNote = feed.querySelector('div[style*="text-align:center"]');
+      if (welcomeNote) welcomeNote.remove();
+
+      const isSelf = msg.user === currentChatUser;
+      const msgDiv = document.createElement('div');
+      msgDiv.setAttribute('data-msg-id', msg.id);
+      msgDiv.style.display = 'flex';
+      msgDiv.style.flexDirection = 'column';
+      msgDiv.style.alignItems = isSelf ? 'flex-end' : 'flex-start';
+      msgDiv.style.margin = '4px 0';
+
+      let contentHtml = '';
+      if (msg.type === 'image') {
+        contentHtml = `<img src="${escapeHtml(msg.url)}" style="max-width:240px; border-radius:12px; display:block; margin-bottom:4px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">`;
+      } else if (msg.type === 'voice') {
+        contentHtml = `<audio controls src="${escapeHtml(apiUrl(msg.url))}" style="max-width:220px;"></audio>`;
+      } else {
+        contentHtml = `<div style="word-break:break-word;">${escapeHtml(msg.message)}</div>`;
+      }
+
+      const timeStr = new Date(msg.timestamp || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      msgDiv.innerHTML = `
+        <div style="font-size:0.75rem; color:#7f8c8d; margin-bottom:2px; padding:0 4px;">
+          ${escapeHtml(msg.user)} • ${timeStr}
+        </div>
+        <div style="background:${isSelf ? '#3498db' : '#ffffff'}; color:${isSelf ? '#ffffff' : '#2c3e50'}; padding:10px 16px; border-radius:16px; max-width:80%; box-shadow:0 2px 8px rgba(0,0,0,0.06); border:${isSelf ? 'none' : '1px solid #e2e8f0'}; position:relative;">
+          ${contentHtml}
+          <button onclick="deleteSingleChatMessage('${msg.id}')" style="position:absolute; top:4px; right:4px; border:none; background:transparent; opacity:0.3; cursor:pointer; font-size:0.7rem; color:${isSelf ? '#fff' : '#000'};" title="Delete">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      `;
+
+      feed.appendChild(msgDiv);
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    window.deleteSingleChatMessage = function(msgId) {
+      if (chatSocket) {
+        chatSocket.emit('delete_message', { messageId: msgId });
+      }
+    };
+
+    window.clearAllChatMessages = function() {
+      if (confirm('Are you sure you want to clear all messages in this room?')) {
+        if (chatSocket) {
+          chatSocket.emit('delete_all', {});
+        }
+      }
+    };
+
+    // Init
+    window.addEventListener('load', function(){
+      goToSection(1);
+      isAdmin = false;
+      // Ensure quiz UI is consistent
+      quizRender();
+    });
+  </script>
+</body>
+</html>
+

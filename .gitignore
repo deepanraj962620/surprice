@@ -1,0 +1,19 @@
+# Local media files
+app.mp4
+*.mp4
+
+# Environment files
+.env
+backend/.env
+
+# Dependencies
+node_modules/
+backend/node_modules/
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+
+# Runtime data (do not commit)
+backend/database.sqlite
+backend/public/uploads/

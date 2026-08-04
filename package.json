@@ -1,0 +1,14 @@
+{
+  "name": "buji-hdb-app",
+  "version": "1.0.0",
+  "description": "Happy Birthday DoraBuji web application and real-time backend",
+  "main": "backend/server.js",
+  "scripts": {
+    "postinstall": "cd backend && npm install",
+    "start": "node backend/server.js",
+    "dev": "cd backend && npm run dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
