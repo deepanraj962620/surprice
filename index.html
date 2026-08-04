@@ -508,7 +508,14 @@
             <div style="font-size:1.3rem; font-weight:700; color:white;" id="quizQuestionText"></div>
           </div>
 
-         
+          <!-- Quiz Options (dynamically populated by JS) -->
+          <div id="quizOptionsArea" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"></div>
+
+          <!-- Quiz Feedback (hidden by default) -->
+          <div id="quizFeedback" style="display:none; margin-top:10px; padding:12px; border-radius:12px; text-align:center; font-weight:600;"></div>
+
+          <!-- Correct answer text (admin only, always hidden for users) -->
+          <div id="quizCorrectText" style="display:none;"></div>
 
           <div class="btn-container" style="margin-top:22px;">
             <button class="btn btn-next" id="quizSubmitBtn" onclick="quizSubmit()" style="min-width:210px; display:none;">
