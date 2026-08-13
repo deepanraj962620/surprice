@@ -472,14 +472,10 @@
       </div>
     </div>
 
-    <!-- SECTION 5: BIRTHDAY QUIZ & LIVE CHAT -->
+    <!-- SECTION 5: BIRTHDAY QUIZ -->
     <div id="section5" class="section" style="position: relative;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; flex-wrap:wrap; gap:10px;">
+      <div style="display:flex; justify-content:flex-end; align-items:center; margin-bottom: 15px; flex-wrap:wrap; gap:10px;">
         <button class="btn btn-primary" onclick="openAdminLoginModal()" style="padding: 8px 15px; font-size: 0.85rem;"><i class="fas fa-lock"></i> Admin</button>
-        <div style="display:flex; background:rgba(0,0,0,0.06); padding:4px; border-radius:12px; gap:6px;">
-          <button id="tabBtnQuiz" class="btn" onclick="switchSec5Tab('quiz')" style="padding: 6px 14px; font-size: 0.85rem; background:#3498db; color:white; border-radius:8px;"><i class="fas fa-question-circle"></i> Quiz</button>
-          <button id="tabBtnChat" class="btn" onclick="switchSec5Tab('chat')" style="padding: 6px 14px; font-size: 0.85rem; background:transparent; color:#2c3e50; border-radius:8px;"><i class="fas fa-comments"></i> Live Chat</button>
-        </div>
       </div>
 
       <!-- Quiz UI -->
@@ -548,65 +544,6 @@
           <div class="btn-container" style="margin-top:18px;">
             <button class="btn btn-exit" onclick="quizExit()" style="min-width:260px;">
               <i class="fas fa-sign-out-alt"></i> Exit Forever Bujii
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- LIVE CHAT UI -->
-      <div id="chatViewArea" style="display:none;">
-        <h2 class="page-title" style="margin-top: 10px;">💬 Private 2-Member Chat</h2>
-        
-        <!-- LOGIN CARD -->
-        <div id="chatLoginArea" class="login-container" style="margin-top:15px;">
-          <div class="message-box" style="margin-top:0; background:linear-gradient(135deg,#2c3e50,#3498db); text-align:center;">
-            <i class="fas fa-comments" style="font-size:2rem; margin-bottom:10px;"></i>
-            <p>Connect with your partner in real-time. Enter your name and private room password to start chatting!</p>
-          </div>
-          <input type="text" id="chatUsernameInput" class="password-input" placeholder="Your Name (e.g. Nike / Buji)" value="">
-          <input type="password" id="chatPasswordInput" class="password-input" placeholder="Room Password (e.g. buji2005)" value="buji2005">
-          <button class="btn btn-primary" onclick="joinChatRoom()" style="width:100%; justify-content:center; padding:14px; font-size:1.1rem;">
-            <i class="fas fa-sign-in-alt"></i> Join Chat Room
-          </button>
-        </div>
-
-        <!-- ACTIVE CHAT AREA -->
-        <div id="chatActiveArea" style="display:none;">
-          <!-- Header Bar -->
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:12px 18px; border-radius:16px; border:1px solid #e2e8f0; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-            <div style="display:flex; align-items:center; gap:10px;">
-              <span id="chatOnlineBadge" style="background:#2ecc71; color:white; font-size:0.75rem; padding:4px 10px; border-radius:20px; font-weight:700;">🟢 1/2 Online</span>
-              <span style="font-weight:600; color:#2c3e50; font-size:0.95rem;" id="chatUserDisplay">User: Nike</span>
-            </div>
-            <div style="display:flex; gap:8px;">
-              <button class="btn btn-exit" style="padding:6px 12px; font-size:0.8rem;" onclick="clearAllChatMessages()"><i class="fas fa-trash-alt"></i> Clear All</button>
-              <button class="btn btn-back" style="padding:6px 12px; font-size:0.8rem;" onclick="leaveChatRoom()"><i class="fas fa-door-open"></i> Leave</button>
-            </div>
-          </div>
-
-          <!-- Message Feed -->
-          <div id="chatMessagesFeed" style="height:380px; overflow-y:auto; padding:15px; background:rgba(241,245,249,0.6); border-radius:18px; border:1px solid #e2e8f0; margin-bottom:10px; display:flex; flex-direction:column; gap:12px;">
-            <div style="text-align:center; color:#7f8c8d; font-size:0.9rem; margin:auto;">Welcome to private chat! Say hello 👋</div>
-          </div>
-
-          <!-- Typing Indicator -->
-          <div id="chatTypingIndicator" style="font-size:0.85rem; color:#7f8c8d; height:22px; font-style:italic; padding-left:5px;"></div>
-
-          <!-- Chat Input Controls -->
-          <div style="display:flex; gap:8px; align-items:center; margin-top:5px;">
-            <button class="btn btn-back" style="padding:12px 14px; border-radius:12px;" onclick="$id('chatPhotoInput').click()" title="Send Photo">
-              <i class="fas fa-camera"></i>
-            </button>
-            <input type="file" id="chatPhotoInput" accept="image/*" style="display:none;" onchange="handleChatPhotoUpload(event)">
-            
-            <button id="chatVoiceRecordBtn" class="btn btn-back" style="padding:12px 14px; border-radius:12px;" onclick="toggleVoiceRecording()" title="Record Voice Message">
-              <i class="fas fa-microphone"></i>
-            </button>
-
-            <input type="text" id="chatMessageInput" class="password-input" style="margin:0; flex:1;" placeholder="Type your message..." onkeypress="handleChatInputKeypress(event)">
-
-            <button class="btn btn-primary" style="padding:12px 18px; border-radius:12px;" onclick="sendChatMessage()">
-              <i class="fas fa-paper-plane"></i>
             </button>
           </div>
         </div>
@@ -1031,278 +968,43 @@ if(!data.length){
             });
         })
         .catch(err => {
-          console.error('Admin responses load failed:', err);
-tbody.innerHTML = '<tr><td colspan="2" style="padding: 12px; text-align: center; color:#e74c3c;">Failed to load responses. Start the backend (cd backend && npm start) and open http://localhost:3001, or add ?server=YOUR_BACKEND_URL to the address.</td></tr>';
+          console.error('Admin responses primary load failed, trying origin fallback:', err);
+          fetch('/api/admin/responses', { headers })
+            .then(r => {
+              if(!r.ok) throw new Error('HTTP ' + r.status);
+              return r.json();
+            })
+            .then(payload => {
+              if(!payload.success) throw new Error(payload.error || 'Failed');
+              const data = payload.responses || [];
+              if(!data.length){
+                tbody.innerHTML = '<tr><td colspan="2" style="padding: 12px; text-align: center; color:#7f8c8d;">No responses yet.</td></tr>';
+                return;
+              }
+              tbody.innerHTML = '';
+              data.slice().reverse().forEach(row => {
+                let parsed = [];
+                try { parsed = JSON.parse(row.responses_json) || []; } catch {}
+                const detailsHtml = '<ul style="margin:0; padding-left:15px; font-size:0.85rem;">' +
+                  parsed.map((item) => `<li>${escapeHtml(item.question)}: ${escapeHtml(item.yourAnswer)}</li>`).join('') +
+                  '</ul>';
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #e2e8f0';
+                tr.innerHTML = `<td style="padding: 12px;">${new Date(row.created_at).toLocaleString()}</td><td style="padding: 12px;">${detailsHtml}</td>`;
+                tbody.appendChild(tr);
+              });
+            })
+            .catch(fallbackErr => {
+              console.error('Admin responses fallback load failed:', fallbackErr);
+              tbody.innerHTML = '<tr><td colspan="2" style="padding: 12px; text-align: center; color:#e74c3c;">Failed to load responses. Make sure backend server is running.</td></tr>';
+            });
         });
     }
-
-
-
-    // ===== LIVE CHAT MODULE LOGIC =====
-    let chatSocket = null;
-    let currentChatRoom = null;
-    let currentChatUser = null;
-    let chatTypingTimeout = null;
-    let mediaRecorder = null;
-    let audioChunks = [];
-
-    window.switchSec5Tab = function(tab) {
-      const quizView = $id('quizAdminView');
-      const chatView = $id('chatViewArea');
-      const btnQuiz = $id('tabBtnQuiz');
-      const btnChat = $id('tabBtnChat');
-
-      if (tab === 'chat') {
-        quizView.style.display = 'none';
-        chatView.style.display = 'block';
-        btnQuiz.style.background = 'transparent';
-        btnQuiz.style.color = '#2c3e50';
-        btnChat.style.background = '#3498db';
-        btnChat.style.color = 'white';
-        initChatSocket();
-      } else {
-        quizView.style.display = 'block';
-        chatView.style.display = 'none';
-        btnQuiz.style.background = '#3498db';
-        btnQuiz.style.color = 'white';
-        btnChat.style.background = 'transparent';
-        btnChat.style.color = '#2c3e50';
-      }
-    };
-
-    function initChatSocket() {
-      if (chatSocket) return;
-      const serverUrl = resolveApiBase();
-      chatSocket = io(serverUrl, { transports: ['websocket', 'polling'] });
-
-      chatSocket.on('joined_success', data => {
-        currentChatRoom = data.room;
-        $id('chatLoginArea').style.display = 'none';
-        $id('chatActiveArea').style.display = 'block';
-        updateChatOnlineBadge(data.onlineUsers);
-      });
-
-      chatSocket.on('peer_joined', data => {
-        updateChatOnlineBadge(data.onlineUsers);
-        if (data.messages && Array.isArray(data.messages)) {
-          renderChatMessagesFeed(data.messages);
-        }
-        showNotification('Live Chat', `${data.user} connected!`);
-      });
-
-      chatSocket.on('new_message', data => {
-        appendSingleChatMessage(data.message);
-      });
-
-      chatSocket.on('typing', data => {
-        const ind = $id('chatTypingIndicator');
-        if (ind) {
-          ind.textContent = `${data.user} is typing...`;
-          clearTimeout(chatTypingTimeout);
-          chatTypingTimeout = setTimeout(() => { ind.textContent = ''; }, 2000);
-        }
-      });
-
-      chatSocket.on('peer_left', data => {
-        showNotification('Live Chat', `${data.user} disconnected.`);
-        updateChatOnlineBadge(1);
-      });
-
-      chatSocket.on('message_deleted', data => {
-        const msgEl = document.querySelector(`[data-msg-id="${data.messageId}"]`);
-        if (msgEl) msgEl.remove();
-      });
-
-      chatSocket.on('all_messages_deleted', () => {
-        $id('chatMessagesFeed').innerHTML = '<div style="text-align:center; color:#7f8c8d; margin-top:20px;">All messages cleared.</div>';
-      });
-
-      chatSocket.on('join_error', data => {
-        showNotification('Join Error', data.error || 'Room is full (max 2 members)');
-      });
-    }
-
-    window.joinChatRoom = function() {
-      const username = $id('chatUsernameInput').value.trim();
-      const password = $id('chatPasswordInput').value.trim();
-      if (!username || !password) {
-        showNotification('Input Required', 'Please enter your name and room password');
-        return;
-      }
-      currentChatUser = username;
-      $id('chatUserDisplay').textContent = `User: ${username}`;
-      initChatSocket();
-      chatSocket.emit('auth_join', { password, user: username });
-    };
-
-    window.leaveChatRoom = function() {
-      if (chatSocket) {
-        chatSocket.disconnect();
-        chatSocket = null;
-      }
-      $id('chatLoginArea').style.display = 'block';
-      $id('chatActiveArea').style.display = 'none';
-      currentChatRoom = null;
-    };
-
-    window.sendChatMessage = function(type = 'text', customUrl = '') {
-      if (!chatSocket || !currentChatUser || !currentChatRoom) return;
-      const inputEl = $id('chatMessageInput');
-      const text = type === 'text' ? inputEl.value.trim() : '';
-
-      if (type === 'text' && !text) return;
-
-      const msgObj = {
-        id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
-        room: currentChatRoom,
-        user: currentChatUser,
-        message: text,
-        type: type,
-        url: customUrl,
-        timestamp: new Date().toISOString()
-      };
-
-      chatSocket.emit('send_message', { message: msgObj });
-      if (type === 'text') inputEl.value = '';
-    };
-
-    window.handleChatInputKeypress = function(e) {
-      if (chatSocket) {
-        chatSocket.emit('typing', {});
-      }
-      if (e.key === 'Enter') {
-        sendChatMessage();
-      }
-    };
-
-    window.handleChatPhotoUpload = function(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        sendChatMessage('image', e.target.result);
-      };
-      reader.readAsDataURL(file);
-    };
-
-    window.toggleVoiceRecording = async function() {
-      const btn = $id('chatVoiceRecordBtn');
-      if (mediaRecorder && mediaRecorder.state === 'recording') {
-        mediaRecorder.stop();
-        btn.style.background = '';
-        btn.style.color = '';
-        btn.innerHTML = '<i class="fas fa-microphone"></i>';
-        return;
-      }
-
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioChunks = [];
-        mediaRecorder = new MediaRecorder(stream);
-        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-        mediaRecorder.onstop = async () => {
-          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-          const formData = new FormData();
-          formData.append('audio', audioBlob, 'voice.webm');
-          try {
-            const res = await fetch(apiUrl('/api/upload'), { method: 'POST', body: formData });
-            const data = await res.json();
-            if (data.success) {
-              sendChatMessage('voice', data.url);
-            }
-          } catch (err) {
-            showNotification('Error', 'Voice upload failed');
-          }
-          stream.getTracks().forEach(track => track.stop());
-        };
-        mediaRecorder.start();
-        btn.style.background = '#e74c3c';
-        btn.style.color = 'white';
-        btn.innerHTML = '<i class="fas fa-stop"></i>';
-      } catch (err) {
-        showNotification('Microphone Error', 'Could not access microphone');
-      }
-    };
-
-    function updateChatOnlineBadge(count) {
-      const badge = $id('chatOnlineBadge');
-      if (badge) {
-        badge.textContent = `🟢 ${count}/2 Online`;
-      }
-    }
-
-    function renderChatMessagesFeed(messages) {
-      const feed = $id('chatMessagesFeed');
-      if (!feed) return;
-      feed.innerHTML = '';
-      if (!messages || messages.length === 0) {
-        feed.innerHTML = '<div style="text-align:center; color:#7f8c8d; font-size:0.9rem; margin:auto;">No messages yet. Say hello 👋</div>';
-        return;
-      }
-      messages.forEach(msg => appendSingleChatMessage(msg));
-    }
-
-    function appendSingleChatMessage(msg) {
-      const feed = $id('chatMessagesFeed');
-      if (!feed) return;
-
-      const welcomeNote = feed.querySelector('div[style*="text-align:center"]');
-      if (welcomeNote) welcomeNote.remove();
-
-      const isSelf = msg.user === currentChatUser;
-      const msgDiv = document.createElement('div');
-      msgDiv.setAttribute('data-msg-id', msg.id);
-      msgDiv.style.display = 'flex';
-      msgDiv.style.flexDirection = 'column';
-      msgDiv.style.alignItems = isSelf ? 'flex-end' : 'flex-start';
-      msgDiv.style.margin = '4px 0';
-
-      let contentHtml = '';
-      if (msg.type === 'image') {
-        contentHtml = `<img src="${escapeHtml(msg.url)}" style="max-width:240px; border-radius:12px; display:block; margin-bottom:4px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">`;
-      } else if (msg.type === 'voice') {
-        contentHtml = `<audio controls src="${escapeHtml(apiUrl(msg.url))}" style="max-width:220px;"></audio>`;
-      } else {
-        contentHtml = `<div style="word-break:break-word;">${escapeHtml(msg.message)}</div>`;
-      }
-
-      const timeStr = new Date(msg.timestamp || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-      msgDiv.innerHTML = `
-        <div style="font-size:0.75rem; color:#7f8c8d; margin-bottom:2px; padding:0 4px;">
-          ${escapeHtml(msg.user)} • ${timeStr}
-        </div>
-        <div style="background:${isSelf ? '#3498db' : '#ffffff'}; color:${isSelf ? '#ffffff' : '#2c3e50'}; padding:10px 16px; border-radius:16px; max-width:80%; box-shadow:0 2px 8px rgba(0,0,0,0.06); border:${isSelf ? 'none' : '1px solid #e2e8f0'}; position:relative;">
-          ${contentHtml}
-          <button onclick="deleteSingleChatMessage('${msg.id}')" style="position:absolute; top:4px; right:4px; border:none; background:transparent; opacity:0.3; cursor:pointer; font-size:0.7rem; color:${isSelf ? '#fff' : '#000'};" title="Delete">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-      `;
-
-      feed.appendChild(msgDiv);
-      feed.scrollTop = feed.scrollHeight;
-    }
-
-    window.deleteSingleChatMessage = function(msgId) {
-      if (chatSocket) {
-        chatSocket.emit('delete_message', { messageId: msgId });
-      }
-    };
-
-    window.clearAllChatMessages = function() {
-      if (confirm('Are you sure you want to clear all messages in this room?')) {
-        if (chatSocket) {
-          chatSocket.emit('delete_all', {});
-        }
-      }
-    };
 
     // Init
     window.addEventListener('load', function(){
       goToSection(1);
       isAdmin = false;
-      // Ensure quiz UI is consistent
       quizRender();
     });
   </script>
