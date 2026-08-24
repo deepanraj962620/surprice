@@ -178,10 +178,20 @@ app.get('/api/server-info', (req, res) => {
 
 // Serve root media files (single canonical copies - avoids duplicates in /public)
 app.get('/app.mp4', (req, res) => {
-  res.sendFile(path.join(__dirname, '../app.mp4'));
+  res.sendFile(path.join(__dirname, '../app.mp4'), (err) => {
+    if (err && !res.headersSent) {
+      console.error('Error serving app.mp4:', err);
+      res.status(404).send('Video file not found');
+    }
+  });
 });
 app.get('/trt.jpeg', (req, res) => {
-  res.sendFile(path.join(__dirname, '../trt.jpeg'));
+  res.sendFile(path.join(__dirname, '../trt.jpeg'), (err) => {
+    if (err && !res.headersSent) {
+      console.error('Error serving trt.jpeg:', err);
+      res.status(404).send('Image file not found');
+    }
+  });
 });
 
 // Serve index.html for root (SPA) - Fixed path
@@ -273,7 +283,7 @@ io.on('connection', (socket) => {
       messages: dbMessages 
     });
     
-    console.log(`✅ ${socket.user} joined ${room} (${roomData.users.size}/2)`);
+    console.log(` ${socket.user} joined ${room} (${roomData.users.size}/2)`);
     socket.emit('joined_success', { room, onlineUsers: roomData.users.size });
   });
 
@@ -329,7 +339,7 @@ io.on('connection', (socket) => {
       if (roomData) {
         roomData.users.delete(socket.id);
         io.to(socket.room).emit('peer_left', { user: socket.user });
-        console.log(`❌ ${socket.user} left ${socket.room} (${roomData.users.size}/2)`);
+        console.log(` ${socket.user} left ${socket.room} (${roomData.users.size}/2)`);
         // Cleanup empty room after 5min
         if (roomData.users.size === 0) {
           setTimeout(() => {

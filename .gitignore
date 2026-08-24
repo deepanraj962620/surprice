@@ -1,6 +1,4 @@
-# Local media files
-app.mp4
-*.mp4
+# Local media files (tracked for video player)
 
 # Environment files
 .env
